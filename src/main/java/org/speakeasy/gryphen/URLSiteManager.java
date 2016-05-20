@@ -8,6 +8,7 @@ package org.speakeasy.gryphen;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *
@@ -16,10 +17,8 @@ import java.util.concurrent.ExecutorService;
 public class URLSiteManager extends Thread {
 
     private boolean running;
-    private static int retries;
-    private static int nthreads;
-    private static ArrayList<HTTPRunnable> rQueue;
-    private static ExecutorService threadPool;
+    private static int retries = 3;
+    private static int nthreads = 8;
     private static ArrayList<URLSite> sites = new ArrayList<URLSite>();
 
     URLSiteManager() {
@@ -27,6 +26,7 @@ public class URLSiteManager extends Thread {
 
     @Override
     public void run() {
+        
         running = true;
         while (running) {
             try {
@@ -42,13 +42,13 @@ public class URLSiteManager extends Thread {
     /*
      * @param URL to crawl
      * @param Integer max number of retries.
-     * 
+     * @param Integer number of threads.
      * 
      */
-    public void addtoQueue(URL url, int lRetries) {
+    public void addtoQueue(URL url, int lRetries, int nthreads) {
         try {
             Runnable httpRunnable = new HTTPRunnable();
-            threadPool.execute(httpRunnable);
+            //exeSvc.execute(httpRunnable);
             return;
         } catch (Exception ex) {
             System.out.println("Error: Unable to add to thread pool!");
@@ -61,7 +61,7 @@ public class URLSiteManager extends Thread {
      * @param String to make sure it is integer long.
      * 
      */
-    private boolean checkLong(String num) {
+    public boolean checkLong(String num) {
 
         if (!"".equals(num)) {
             try {
@@ -121,10 +121,10 @@ public class URLSiteManager extends Thread {
     }
 
     private void onExit() {
-        threadPool.shutdown();
+        //exeSvc.shutdown();
     }
 
     public void shutdownThreadPoolNow() {
-        threadPool.shutdownNow();
+        //exeSvc.shutdownNow();
     }
 }

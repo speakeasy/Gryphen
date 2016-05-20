@@ -1,9 +1,6 @@
 package org.speakeasy.gryphen;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Console extends Thread {
 
@@ -33,6 +30,7 @@ public class Console extends Thread {
 
                 String[] inputarr;
                 URL aurl;
+                int threads = 1;
                 while (true) {
                     System.out.println("Please enter a command:");
                     input = readEntry();
@@ -40,18 +38,31 @@ public class Console extends Thread {
 
                     if ("CRAWL".equalsIgnoreCase(inputarr[0])) {
                         try {
-                            if (inputarr.length > 1 && inputarr.length < 3) {
+                            if (inputarr.length > 2 && inputarr.length < 4) {
+                                if (urlmgr.checkLong(inputarr[1])) {
+                                    threads = Integer.parseInt(inputarr[1]);
+                                    if (inputarr[2].toLowerCase().startsWith("http://")) {
+                                        aurl = new URL(inputarr[2]);
+                                        urlmgr.addtoQueue(aurl, urlmgr.getRetries(), threads);
+                                    } else if (inputarr[2].toLowerCase().startsWith("https://")) {
+                                        System.out.println("Error: HTTPS not yet implemented!");
+                                    } else if (inputarr[2].toLowerCase().matches("[a-z0-9-]{3,}[.][a-z0-9-]{2,}.*")) {
+                                        aurl = new URL("http://" + inputarr[2]);
+                                        urlmgr.addtoQueue(aurl, urlmgr.getRetries(), threads);
+                                    }
+                                }
+                            } else if (inputarr.length > 2 && inputarr.length < 4) {
                                 if (inputarr[1].toLowerCase().startsWith("http://")) {
                                     aurl = new URL(inputarr[1]);
-                                    urlmgr.addtoQueue(aurl, urlmgr.getRetries());
+                                    urlmgr.addtoQueue(aurl, urlmgr.getRetries(), threads);
                                 } else if (inputarr[1].toLowerCase().startsWith("https://")) {
                                     System.out.println("Error: HTTPS not yet implemented!");
                                 } else if (inputarr[1].toLowerCase().matches("[a-z0-9-]{3,}[.][a-z0-9-]{2,}.*")) {
                                     aurl = new URL("http://" + inputarr[1]);
-                                    urlmgr.addtoQueue(aurl, urlmgr.getRetries());
+                                    urlmgr.addtoQueue(aurl, urlmgr.getRetries(), threads);
                                 }
                             } else {
-                                System.out.println("Usage: >crawl http://example.com/");
+                                System.out.println("Usage: >crawl [n-threads] <website>");
                             }
                         } catch (Exception ex) {
                             ex.printStackTrace();
