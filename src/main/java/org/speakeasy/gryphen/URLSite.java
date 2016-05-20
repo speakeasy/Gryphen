@@ -12,12 +12,11 @@ class URLSite extends Thread {
     public ArrayList<URL> tocrawl = new ArrayList<URL>();
     public ArrayList<URL> crawled = new ArrayList<URL>();
     public int retries = 3;
-    public int nthreads = 8;
+    public int nthreads = 4;
     public ArrayList<HTTPRunnable> rQueue = new ArrayList<HTTPRunnable>();
-    private ExecutorService threadPool = Executors.newWorkStealingPool();
+    private ExecutorService threadPool;
 
     public URLSite() {
-
     }
 
     public URLSite(URL thebaseURL) {
@@ -26,6 +25,7 @@ class URLSite extends Thread {
 
     @Override
     public void start() {
+        threadPool = Executors.newWorkStealingPool(nthreads);
         running = true;
         while (running) {
             try {
@@ -40,6 +40,10 @@ class URLSite extends Thread {
 
     public void setRetries(int retries) {
         this.retries = retries;
+    }
+    
+    public void setThreads(int threads) {
+        nthreads = threads;
     }
 
     public void addToQueue(URL url) {

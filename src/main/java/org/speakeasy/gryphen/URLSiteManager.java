@@ -18,7 +18,6 @@ public class URLSiteManager extends Thread {
 
     private boolean running;
     private static int retries = 3;
-    private static int nthreads = 8;
     private static ArrayList<URLSite> sites = new ArrayList<URLSite>();
 
     URLSiteManager() {
@@ -91,21 +90,6 @@ public class URLSiteManager extends Thread {
 
     public void setRetries(int nretries) {
         retries = nretries;
-    }
-
-    public boolean setThreads(String lThreads) {
-        if (checkLong(lThreads)) {
-            try {
-                nthreads = (int) Long.parseLong(lThreads);
-                if (4 > nthreads) {
-                    nthreads = 4;
-                }
-                return true;
-            } catch (NumberFormatException nfex) {
-                ;
-            }
-        }
-        return false;
     }
 
     public int getRetries() {
