@@ -30,16 +30,18 @@ public class HTTPRunnable implements Runnable {
         doFetch();
     }
 
-    private boolean doFetch() {
+    private void doFetch() {
         try {
             // Send data
             URLConnection urlConn = url.openConnection();
-            urlConn.setRequestProperty("User-Agent", "Mozilla 5.0 (Windows; U; " + "Windows NT 5.1; en-US; rv:1.8.0.11) ");
+            urlConn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36");
             urlConn.setRequestProperty("Referrer", url.toExternalForm());
+            urlConn.setRequestProperty("Accept-Charset", "UTF-8");
             HttpURLConnection httpConn = (HttpURLConnection) urlConn;
             httpConn.setChunkedStreamingMode(1496);
             urlConn.setDoOutput(true);
             httpConn.connect();
+            state = HTTPThreadState.CONNECTING;
             DataOutputStream wr = new DataOutputStream(httpConn.getOutputStream());
             //System.out.print(urlConn.getHeaderFields().values() + "");
             //System.out.print(urlConn + "");
@@ -52,17 +54,19 @@ public class HTTPRunnable implements Runnable {
 
             DataOutputStream fout = new DataOutputStream(new FileOutputStream(file));
 
+            state = HTTPThreadState.DOWNLOADING;
             while (rd.available() > 0) {
+                if(rd.available() > 8) {
+                    fout.writeLong(rd.readLong());
+                }
                 fout.writeByte(rd.readByte());
             }
 
             wr.close();
             rd.close();
-
-            return true;
+            state = HTTPThreadState.CLOSED;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
     }
 

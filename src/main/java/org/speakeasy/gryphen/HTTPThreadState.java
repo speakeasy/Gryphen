@@ -7,6 +7,7 @@ public enum HTTPThreadState {
     CONNECTING,
     WAITING,
     DOWNLOADING,
+    CLOSED,
     RETRYING,
     DONE;
 
